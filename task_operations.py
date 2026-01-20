@@ -12,7 +12,8 @@ class TaskOperations():
         #dict that represents the task
         data = {
             "Title": title,
-            "Description": description
+            "Description": description,
+            "Status": None
             }
         
         file_path = Path('tasks.json')  #json file path 
@@ -64,5 +65,39 @@ class TaskOperations():
             for t in tasks:
                 if t['title'] != title:
                     new_tasks.append(t)
+
+            with open('tasks.json', 'w') as file:
+                json.dump(new_tasks, file, indent=4)
         else:
             print("Exeption")   #usar excepcion
+
+    #mark task as in progress or done
+    def mark(title: str, status: str) -> None:
+        file_path = Path('tasks.json')
+
+        if file_path.exists():
+            with open('tasks.json', 'r') as file:
+                tasks = json.load(file)
+            
+            i = 0
+            while(tasks[i]["Title"] != title and i < len(tasks)):
+                i += 1
+            if i < len(tasks):
+                tasks[i]["Status"] = status
+
+            with open('tasks.json', 'w') as file:
+                json.dump(tasks, file, indent=4)
+        else:
+            print("Exeption")   #usar excepcion
+
+    #list all tasks
+    def list_all():
+        file_path = Path('tasks.json')
+
+        if file_path.exists():
+            with open('tasks.json', 'r') as file:
+                tasks = json.load(file)
+            for t in tasks:
+                print("Title: " + t["Title"])
+                print("Description: " + t["Description"])
+                print("Status: " + t["Status"])
