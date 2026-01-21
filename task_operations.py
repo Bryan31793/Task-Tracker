@@ -59,7 +59,7 @@ class TaskOperations():
 
         if file_path.exists():
             with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
+                tasks = json.load(file) 
             
             new_tasks = []
             for t in tasks:
@@ -101,3 +101,20 @@ class TaskOperations():
                 print("Title: " + t["Title"])
                 print("Description: " + t["Description"])
                 print("Status: " + t["Status"])
+
+    #list all tasks that are not done, done and in progress
+    def list_tasks(status: str = None):
+        file_path = Path('tasks.json')
+
+        if file_path.exists():
+            with open('tasks.json', 'r') as file:
+                tasks = json.load(file)
+            
+            for t in tasks:
+                if status == t["Status"]:
+                    print("Title: " + t["Title"])
+                    print("Description: " + t["Description"])
+                    print("Status: " + t["Status"])
+        else:
+            print("Exeption")   #usar excepcion
+            
