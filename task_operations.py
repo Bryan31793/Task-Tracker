@@ -7,13 +7,25 @@ class TaskOperations():
     def __init__(self):
         pass
 
-    #create a class
-    def add(title: str, description: str) -> None:
+    #create a task
+    def add(self, description: str) -> None:
+
+        file_path = Path('id_file.txt')
+        if file_path.exists():
+            with open('id_file.txt', 'r') as file:
+                id_task = int(file.read())
+
+            with open('id_file.txt', 'w') as file:
+                file.write(str(id_task + 1))
+        else:
+            id_task = 0
+            with open('id_file.txt', 'w') as file:
+                file.write('1')
         #dict that represents the task
         data = {
-            "Title": title,
-            "Description": description,
-            "Status": None
+            "id": id_task,
+            "description": description,
+            "status": "todo"
             }
         
         file_path = Path('tasks.json')  #json file path 
@@ -28,11 +40,7 @@ class TaskOperations():
             json.dump(tasks, file, indent=4)    #writes the list into the json file
 
     #update a task
-    def update(title: str, new_title: str = None, new_description: str = None) -> None:
-
-        if not new_title and not new_description:
-            print("Exeption")
-            return 
+    def update(self, id_task: int, new_description: str) -> None:
         
         file_path = Path('tasks.json')
 
@@ -40,11 +48,9 @@ class TaskOperations():
             with open('tasks.json', 'r') as file:
                 tasks = json.load(file)
             for t in tasks:
-                if t['Title'] == title:
-                    if new_title:
-                        t['Title'] = new_title
+                if t['id'] == id_task:
                     if new_description:
-                        t['Description'] = new_description
+                        t['description'] = new_description
 
                     with open('tasks.json', 'w') as file:
                         json.dump(tasks, file, indent=4)
@@ -54,7 +60,7 @@ class TaskOperations():
             print("Exeption")   #usar excepcion
 
     #delete a task
-    def delete(title: str) -> None:
+    def delete(self, id_task: int) -> None:
         file_path = Path('tasks.json')
 
         if file_path.exists():
@@ -63,7 +69,7 @@ class TaskOperations():
             
             new_tasks = []
             for t in tasks:
-                if t['title'] != title:
+                if t['id'] != id_task:
                     new_tasks.append(t)
 
             with open('tasks.json', 'w') as file:
@@ -72,7 +78,7 @@ class TaskOperations():
             print("Exeption")   #usar excepcion
 
     #mark task as in progress or done
-    def mark(title: str, status: str) -> None:
+    def mark(self, id_task: int, status: str) -> None:
         file_path = Path('tasks.json')
 
         if file_path.exists():
@@ -80,10 +86,10 @@ class TaskOperations():
                 tasks = json.load(file)
             
             i = 0
-            while(tasks[i]["Title"] != title and i < len(tasks)):
+            while(tasks[i]["id"] != id_task and i < len(tasks)):
                 i += 1
             if i < len(tasks):
-                tasks[i]["Status"] = status
+                tasks[i]["status"] = status
 
             with open('tasks.json', 'w') as file:
                 json.dump(tasks, file, indent=4)
@@ -91,19 +97,19 @@ class TaskOperations():
             print("Exeption")   #usar excepcion
 
     #list all tasks
-    def list_all():
+    def list_all(self):
         file_path = Path('tasks.json')
 
         if file_path.exists():
             with open('tasks.json', 'r') as file:
                 tasks = json.load(file)
             for t in tasks:
-                print("Title: " + t["Title"])
-                print("Description: " + t["Description"])
-                print("Status: " + t["Status"])
+                print(f"id: {t["id"]}")
+                print(f"description: {t["description"]}")
+                print(f"status: {t["status"]}")
 
     #list all tasks that are not done, done and in progress
-    def list_tasks(status: str = None):
+    def list_tasks(self, status: str = None):
         file_path = Path('tasks.json')
 
         if file_path.exists():
@@ -111,10 +117,9 @@ class TaskOperations():
                 tasks = json.load(file)
             
             for t in tasks:
-                if status == t["Status"]:
-                    print("Title: " + t["Title"])
-                    print("Description: " + t["Description"])
-                    print("Status: " + t["Status"])
+                if status == t["status"]:
+                    print(f"id: {t["id"]}")
+                    print(f"description: {t["description"]}")
+                    print(f"status: {t["status"]}")
         else:
             print("Exeption")   #usar excepcion
-            
