@@ -1,5 +1,6 @@
 import json     #task are stored in json files
 from pathlib import Path
+from datetime import datetime
 
 #class containing all the actions you can realize
 class TaskOperations():
@@ -22,10 +23,13 @@ class TaskOperations():
             with open('id_file.txt', 'w') as file:
                 file.write('1')
         #dict that represents the task
+        now = datetime.now()
         data = {
             "id": id_task,
             "description": description,
-            "status": "todo"
+            "status": "todo",
+            "createdAt": str(now),
+            "updatedAt": None
             }
         
         file_path = Path('tasks.json')  #json file path 
@@ -51,7 +55,7 @@ class TaskOperations():
                 if t['id'] == id_task:
                     if new_description:
                         t['description'] = new_description
-
+                        t["updatedAt"] = str(datetime.now())
                     with open('tasks.json', 'w') as file:
                         json.dump(tasks, file, indent=4)
 
@@ -123,3 +127,8 @@ class TaskOperations():
                     print(f"status: {t["status"]}")
         else:
             print("Exeption")   #usar excepcion
+
+obj = TaskOperations()
+
+#obj.add("buy groceries")
+obj.update(0, "new task")
