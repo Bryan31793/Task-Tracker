@@ -44,89 +44,103 @@ class TaskOperations():
             json.dump(tasks, file, indent=4)    #writes the list into the json file
 
     #update a task
-    def update(self, id_task: int, new_description: str) -> None:
+    def update(self, id_task: int, new_description: str = None) -> None:
         
         file_path = Path('tasks.json')
 
-        if file_path.exists():
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
-            for t in tasks:
-                if t['id'] == id_task:
-                    if new_description:
-                        t['description'] = new_description
-                        t["updatedAt"] = str(datetime.now())
-                    with open('tasks.json', 'w') as file:
-                        json.dump(tasks, file, indent=4)
+        if not file_path.exists():
+            raise ValueError("file tasks.json doesn't exist")
+        
+        
+        with open('tasks.json', 'r') as file:
+            tasks = json.load(file)
 
-                    return
-        else:
-            print("Exeption")   #usar excepcion
+        for t in tasks:
+            if t['id'] == id_task:
+                if not new_description:
+                    raise ValueError("new description can't be empty")
+                
+                t['description'] = new_description
+                t["updatedAt"] = str(datetime.now())
+
+                with open('tasks.json', 'w') as file:
+                    json.dump(tasks, file, indent=4)
+
+                return
+
+        raise KeyError(f"id {id_task} doesn't exist")
+        
 
     #delete a task
     def delete(self, id_task: int) -> None:
         file_path = Path('tasks.json')
 
-        if file_path.exists():
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file) 
-            
-            new_tasks = []
-            for t in tasks:
-                if t['id'] != id_task:
-                    new_tasks.append(t)
+        if not file_path.exists():
+            raise FileNotFoundError("file tasks.json doesn't exist")
+        
+        with open('tasks.json', 'r') as file:
+            tasks = json.load(file) 
+        
+        new_tasks = []
+        for t in tasks:
+            if t['id'] != id_task:
+                new_tasks.append(t)
 
-            with open('tasks.json', 'w') as file:
-                json.dump(new_tasks, file, indent=4)
-        else:
-            print("Exeption")   #usar excepcion
+        if len(new_tasks) == len(tasks):
+            raise KeyError(f"id {id_task} doesn't exist")
+        
+        with open('tasks.json', 'w') as file:
+            json.dump(new_tasks, file, indent=4)
 
     #mark task as in progress or done
     def mark(self, id_task: int, status: str) -> None:
         file_path = Path('tasks.json')
 
-        if file_path.exists():
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
+        if not file_path.exists():
+            raise FileNotFoundError("file tasks.json doesn't exist")
+        
+        with open('tasks.json', 'r') as file:
+            tasks = json.load(file)
+        
+        for t in tasks:
+            if tasks["id"] == id_task:
+                tasks["status"] = status
+                with open('tasks.json', 'w') as file:
+                    json.dump(tasks, file, indent=4)        
+                
+                return
             
-            i = 0
-            while(tasks[i]["id"] != id_task and i < len(tasks)):
-                i += 1
-            if i < len(tasks):
-                tasks[i]["status"] = status
-
-            with open('tasks.json', 'w') as file:
-                json.dump(tasks, file, indent=4)
-        else:
-            print("Exeption")   #usar excepcion
+        raise KeyError(f"id {id_task} doesn't exist")
 
     #list all tasks
     def list_all(self):
         file_path = Path('tasks.json')
 
-        if file_path.exists():
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
-            for t in tasks:
-                print(f"id: {t["id"]}")
-                print(f"description: {t["description"]}")
-                print(f"status: {t["status"]}")
+        if not file_path.exists():
+            raise FileNotFoundError("file tasks.json doesn't exist")
+
+        with open('tasks.json', 'r') as file:
+            tasks = json.load(file)
+        for t in tasks:
+            print(f"id: {t["id"]}")
+            print(f"description: {t["description"]}")
+            print(f"status: {t["status"]}")
 
     #list all tasks that are not done, done and in progress
     def list_tasks(self, status: str = None):
         file_path = Path('tasks.json')
 
-        if file_path.exists():
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
-            
-            for t in tasks:
-                if status == t["status"]:
-                    print(f"id: {t["id"]}")
-                    print(f"description: {t["description"]}")
-                    print(f"status: {t["status"]}")
-        else:
-            print("Exeption")   #usar excepcion
+        if not file_path.exists():
+            raise FileNotFoundError("file tasks.json doesn't exist")
+        
+        with open('tasks.json', 'r') as file:
+            tasks = json.load(file)
+        
+        for t in tasks:
+            if status == t["status"]:
+                print(f"id: {t["id"]}")
+                print(f"description: {t["description"]}")
+                print(f"status: {t["status"]}")
 
 obj = TaskOperations()
 
