@@ -49,7 +49,7 @@ class TaskOperations():
         file_path = Path('tasks.json')
 
         if not file_path.exists():
-            raise ValueError("file tasks.json doesn't exist")
+            raise FileNotFoundError("file tasks.json doesn't exist")
         
         
         with open('tasks.json', 'r') as file:
