@@ -1,33 +1,59 @@
 from task_operations import TaskOperations
+import shlex
 
 #command line interface
 def cli():
     command = input()
-    command_list = command.split()
+    tokens = shlex.split(command) 
 
-    if command_list[0] == "task-cli":
-        if len(command_list) == 1:
-            raise ValueError("Missing command")
-        if command_list[1] == "add":
-            if len(command_list) == 2:
-                raise ValueError("Missing argument")
-            if len(command_list) > 3:
-                raise ValueError(f"{command_list[3]} not found")
-            
-            TaskOperations.add(command_list[2])
-        elif command_list[1] == "update":
-            if len(command_list) < 4:
-                raise ValueError("Missing argument")
-            if len(command_list) > 4:
-                raise ValueError(f"{command_list[4]} not found")
-            try:
-                TaskOperations.update(command_list[2], command_list[3])
-            except FileNotFoundError as e:
-                print(e)
-            except ValueError as e:
-                print(e)
-            except KeyError as e:
-                print(e)
-    else:
-        raise ValueError(f"{command_list[0]} not found")
+    if not tokens:
+        return
+
+    if tokens[0] != "task-cli":
+        print(f"command {tokens[0]} not found")
+        return   
     
+    if len(tokens) < 2:
+        print("Missing command")
+        return 
+    
+    commands = {
+        "add": handle_add,
+        "update": handle_update,
+        "delete": None,
+        "mark": None,
+        "list": None
+    }
+    
+    cmd = tokens[1]
+    handler = commands.get(cmd)
+
+    if not handler:
+        print(f"command {cmd} doesn't exist")
+        return
+    
+    try:
+        handler(tokens[2:])
+    except Exception as e:
+        print(e)
+
+    
+
+def handle_add(args: str) -> None:
+    if len(args) != 1:
+        raise ValueError("usage: task-cli add <description>")
+    
+    TaskOperations.add(args[0])
+
+def handle_update(args: str) -> None:
+    if len(args) != 2:
+        raise ValueError("usage: task-cli update <id> <description>")
+    
+    try:
+        args[0] = int(args[0])
+    except ValueError:
+        print("id must be an integer")
+        
+    TaskOperations.update(args[0], args[1])
+    
+cli()
