@@ -20,9 +20,9 @@ def cli():
     commands = {
         "add": handle_add,
         "update": handle_update,
-        "delete": None,
-        "mark": None,
-        "list": None
+        "delete": handle_delete,
+        "mark": handle_mark,
+        "list": handle_list
     }
     
     cmd = tokens[1]
@@ -39,21 +39,53 @@ def cli():
 
     
 
-def handle_add(args: str) -> None:
+def handle_add(args: list[str]) -> None:
     if len(args) != 1:
         raise ValueError("usage: task-cli add <description>")
     
     TaskOperations.add(args[0])
 
-def handle_update(args: str) -> None:
+def handle_update(args: list[str]) -> None:
     if len(args) != 2:
         raise ValueError("usage: task-cli update <id> <description>")
     
-    try:
-        args[0] = int(args[0])
-    except ValueError:
-        print("id must be an integer")
-        
-    TaskOperations.update(args[0], args[1])
+    if not args[0].isdigit():
+        raise ValueError("id must be integer")
     
-cli()
+    TaskOperations.update(int(args[0]), args[1])
+
+def handle_delete(args: list[str]) -> None:
+    if len(args) != 1:
+        raise ValueError("usage: task-cli delete <id>")
+    
+    if not args[0].isdigit():
+        raise ValueError("id must be integer")
+    
+    TaskOperations.delete(int(args[0]))
+
+def handle_mark(args: list[str]) -> None:
+    if len(args) != 2:
+        raise ValueError("usage: task-cli mark <id> <status>")
+    
+    if not args[0].isdigit:
+        raise ValueError("id must be integer")
+    
+    if args[1] != "done" and args[1] != "in-progress":
+        raise ValueError("usage: status can be in-progress or done")
+
+    TaskOperations.mark(int(args[0]), args[1]) 
+
+def handle_list(args: list[str]) -> None:
+    if len(args) == 0:
+        TaskOperations.list_all()
+        return
+    
+    if len(args) != 1:
+        raise ValueError("usage: task-cli list  or   task-cli list <status>")
+    
+    if args[0] != "todo" and args[0] != "in-progress" and args[0] != "todo":
+        raise ValueError("usage: status can be todo, in-progress or done")
+    
+    TaskOperations.list_tasks(args[0])
+    
+    
