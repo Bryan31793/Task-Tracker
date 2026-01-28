@@ -120,7 +120,7 @@ class TaskOperations():
         with open('tasks.json', 'r') as file:
             tasks = json.load(file)
         for t in tasks:
-            print(f"id: {t["id"]}")
+            print(f"\nid: {t["id"]}")
             print(f"description: {t["description"]}")
             print(f"status: {t["status"]}")
 
@@ -137,7 +137,7 @@ class TaskOperations():
         
         for t in tasks:
             if status == t["status"]:
-                print(f"id: {t["id"]}")
+                print(f"\nid: {t["id"]}")
                 print(f"description: {t["description"]}")
                 print(f"status: {t["status"]}")
 
