@@ -2,7 +2,7 @@ from task_operations import TaskOperations
 import shlex
 
 #command line interface
-def cli():
+def cli_input():
     command = input()
     tokens = shlex.split(command) 
 
@@ -83,7 +83,7 @@ def handle_list(args: list[str]) -> None:
     if len(args) != 1:
         raise ValueError("usage: task-cli list  or   task-cli list <status>")
     
-    if args[0] != "todo" and args[0] != "in-progress" and args[0] != "todo":
+    if args[0] != "todo" and args[0] != "in-progress" and args[0] != "done":
         raise ValueError("usage: status can be todo, in-progress or done")
     
     TaskOperations.list_tasks(args[0])
